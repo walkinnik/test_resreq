@@ -66,7 +66,7 @@ This repository contains an automated test suite for the ReqRes API, utilizing *
     * JSON-Simple: For building JSON payloads.
 
 2. TestRunner:
-    * Executes all feature files with options for generating HTML and JSON reports.
+    * Executes all feature files.
 
 --- 
 
