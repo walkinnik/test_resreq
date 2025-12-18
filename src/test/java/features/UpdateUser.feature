@@ -1,6 +1,9 @@
 Feature: Get a user from ReqRes API
 
-  # Positive case
+  Background:
+    Given I set the base URL for the ReqRes API
+
+  @Positive
   Scenario: Update a user successfully
     Given I set the base URL for the ReqRes API
     When I send patch request to update a user with id 1

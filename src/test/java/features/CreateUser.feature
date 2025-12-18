@@ -1,8 +1,10 @@
 Feature: Create a user on ReqRes API
 
-  # Positive case
-  Scenario: Create a user successfully
+  Background:
     Given I set the base URL for the ReqRes API
+
+  @Positive
+  Scenario: Create a user successfully
     When I send a POST request to create a user with name "John Doe" and job "Software Engineer"
     Then I should receive a response with status code 201
     And the response body should contain the name "John Doe"

@@ -5,21 +5,17 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.json.simple.JSONObject;
+import utilities.Utility;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.LocalDate;
+import java.util.*;
 
-import static io.restassured.RestAssured.given;
 import static org.testng.Assert.assertEquals;
-import static utility.DateUtility.removeTime;
 
 public class Users {
     private Response response;
-    private JSONObject requestBody;
+    private static final String ENDPOINT = "/users";
 
     @Given("I set the base URL for the ReqRes API")
     public void iSetTheBaseURLForTheReqResAPI() {
@@ -28,14 +24,16 @@ public class Users {
 
     @When("I send a POST request to create a user with name {string} and job {string}")
     public void iSendAPostRequestToCreateAUserWithNameAndJob(String name, String job) {
-        requestBody = new JSONObject();
-        requestBody.put("name", name);
-        requestBody.put("job", job);
+        Utility util = new Utility();
+        Map<String, String> body = new HashMap<>();
+        body.put("name", name);
+        body.put("job", job);
 
-        response = given()
-                .header("Content-Type", "application/json")
-                .body(requestBody.toJSONString())
-                .post("/users");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("x-api-key", "reqres_c318e23f376c4bc99fd9c1c76d75e3e4");
+
+        response = util.sendPostRequest(ENDPOINT, headers, body);
     }
 
     @Then("I should receive a response with status code {int}")
@@ -57,8 +55,14 @@ public class Users {
 
     @When("I send get request to retrieve a user with id {int}")
     public void iSendGetRequestToRetrieveAUserWithId(int id) {
-        response = given()
-                .get("/users/" + id);
+        Utility util = new Utility();
+        String endpoint = ENDPOINT + "/" + id;
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("x-api-key", "reqres_c318e23f376c4bc99fd9c1c76d75e3e4");
+
+        response = util.sendGetRequest(endpoint, headers);
     }
 
     @Then("the response body should contain the email {string}")
@@ -81,26 +85,40 @@ public class Users {
 
     @When("I send patch request to update a user with id {int}")
     public void iSendPatchRequestToUpdateAUserWithId(int id) {
-        response = given()
-                .put("/users/" + id);
+        Utility util = new Utility();
+        String endpoint = ENDPOINT + "/" + id;
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("x-api-key", "reqres_c318e23f376c4bc99fd9c1c76d75e3e4");
+
+        Map<String, String> body = new HashMap<>();
+        body.put("name", "abc");
+        body.put("job", "DEF");
+
+        response = util.sendPatchRequest(endpoint,headers,body);
     }
 
     @Then("the response body should contain current date")
     public void theResponseBodyShouldContainTheCurrentDate() throws ParseException {
         String actualUpdatedAtString = response.jsonPath().getString("updatedAt");
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Date actualDate = formatter.parse(actualUpdatedAtString);
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/London")); // reqres.in timezone
-        Date currentDate = calendar.getTime();
+        LocalDate actualDateOnly = utilities.DateUtility.formatToLocalDate(actualUpdatedAtString);
+        LocalDate londonDateOnly = utilities.DateUtility.tbilisiLocalDate();
 
-        assertEquals(removeTime(actualDate), removeTime(currentDate));
+        assertEquals(actualDateOnly, londonDateOnly);
     }
 
     @When("I send patch request to delete a user with id {int}")
-    public void iSendPatchRequestToDeketeAUserWithId(int id) {
-        response = given()
-                .delete("/users/" + id);
+    public void iSendPatchRequestToDeleteAUserWithId(int id) {
+        Utility util = new Utility();
+        String endpoint = ENDPOINT + "/" + id;
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("x-api-key", "reqres_c318e23f376c4bc99fd9c1c76d75e3e4");
+
+        response = util.sendDeleteRequest(endpoint,headers);
     }
 
 }

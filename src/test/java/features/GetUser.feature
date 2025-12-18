@@ -1,6 +1,9 @@
 Feature: Get a user from ReqRes API
 
-  # Positive case
+  Background:
+    Given I set the base URL for the ReqRes API
+
+  @Positive
   Scenario: Get a user successfully
     Given I set the base URL for the ReqRes API
     When I send get request to retrieve a user with id 1
@@ -9,7 +12,7 @@ Feature: Get a user from ReqRes API
     And the response body should contain the first name "George"
     And the response body should contain the last name "Bluth"
 
-  # Negative case
+  @Negative
   Scenario: Get a user unsuccessfully
     Given I set the base URL for the ReqRes API
     When I send get request to retrieve a user with id 999
